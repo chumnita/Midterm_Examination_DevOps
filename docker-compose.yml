@@ -1,0 +1,34 @@
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-postgres
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - C:/Users/CH_NITA/Documents/ExamDevOps/exam1/jenkins_home:/var/jenkins_home
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: jenkins
+      POSTGRES_PASSWORD: jenkins123
+      POSTGRES_DB: jenkins_db
+    ports:
+      - "5433:5432"  # ✅ Changed host port to avoid conflict
+    volumes:
+      - C:/Users/CH_NITA/Documents/ExamDevOps/exam1/pg_data:/var/lib/postgresql/data
+
+  agent-spring:
+    build: ./spring-agent
+    container_name: jenkins-agent-spring
+    ports:
+      - "5432:5432"  # ✅ Match exam requirement
+    environment:
+      - JENKINS_AGENT_SSH_PUBKEY=ssh-ed25519 AAAA...your public key...
+    volumes:
+      - C:/Users/CH_NITA/Documents/ExamDevOps/exam1/agent_spring_home:/home/jenkins
+
